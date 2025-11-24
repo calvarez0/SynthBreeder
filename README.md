@@ -1,27 +1,27 @@
 # SynthBreeder
 
-**Interactive Evolution of Percussion Sounds using CPPN-NEAT**
+**Interactive Evolution of Percussion Sounds using NEAT with Compositional Activation Functions**
 
-![SynthBreeder Interface](assets/preview.png)
+![SynthBreeder Interface](preview.png)
 
 ## Overview
 
-SynthBreeder is an interactive evolutionary system for designing percussion sounds through direct manipulation of Compositional Pattern Producing Networks (CPPNs). The system combines NeuroEvolution of Augmenting Topologies (NEAT) with real-time audio synthesis, allowing users to evolve complex timbres through iterative selection.
+SynthBreeder is an interactive evolutionary system for designing percussion sounds through direct manipulation of neural networks with diverse activation functions. The system combines NeuroEvolution of Augmenting Topologies (NEAT) with real-time audio synthesis, allowing users to evolve complex timbres through iterative selection.
 
-Inspired by Picbreeder's approach to visual evolution and research on CPPN-based sound synthesis, SynthBreeder treats percussion generation as a function approximation problem where neural networks map temporal and frequency coordinates to audio waveforms.
+Inspired by Picbreeder's visual evolution approach and the compositional activation function concept from CPPNs, SynthBreeder uses evolved neural networks as function generators that map temporal indices to audio waveforms. While influenced by CPPN methodology, this implementation differs from canonical CPPNs in that it generates sequential outputs rather than querying spatial coordinates.
 
 ## Technical Architecture
 
 ### Sound Synthesis Model
 
-The system generates 0.5-second percussion samples at 44.1kHz using a two-stage process:
+The system generates 0.5-second percussion samples at 44.1kHz using evolved neural networks as function generators:
 
-1. **Wavetable Generation**: CPPNs produce a 1024-sample wavetable by mapping normalized position coordinates [-1, 1] to amplitude values
-2. **Temporal Envelope**: A second CPPN maps time coordinates [0, 1] to amplitude envelopes, shaping the percussive attack and decay
+1. **Wavetable Generation**: Networks map normalized position indices [-1, 1] to amplitude values across a 1024-sample wavetable
+2. **Temporal Envelope**: Networks map time indices [0, 1] to amplitude envelopes, shaping the percussive attack and decay
 
-Each CPPN receives temporal (t) and optionally frequency (f) inputs, processes them through evolved network topologies, and outputs amplitude values that are combined through wavetable synthesis.
+Each network receives a single scalar input representing position in the output sequence, processes it through evolved topologies with diverse activation functions, and outputs amplitude values that are combined through wavetable synthesis.
 
-### CPPN-NEAT Implementation
+### NEAT Implementation with Compositional Activations
 
 The evolutionary algorithm implements core NEAT features:
 
@@ -44,7 +44,7 @@ The evolutionary algorithm implements core NEAT features:
 
 ### Activation Function Library
 
-The system includes 42 activation functions categorized by acoustic properties:
+The system includes 42 activation functions chosen for their ability to generate interesting temporal patterns through composition. Unlike traditional neural networks that typically use only sigmoid or ReLU, this diverse palette enables complex waveform generation through functional composition:
 
 **Basic Waveforms**: sine, cosine, square, sawtooth, triangle
 
@@ -66,7 +66,7 @@ The system includes 42 activation functions categorized by acoustic properties:
 
 **Miscellaneous**: linear, clamp, fold
 
-Each hidden node randomly selects from enabled activation functions, creating diverse signal processing topologies.
+Each hidden node randomly selects from enabled activation functions. When composed through the network topology, these functions create diverse signal processing chains that generate complex audio patterns.
 
 ## Interactive Evolution Process
 
@@ -124,12 +124,18 @@ Users can enable/disable any of the 42 activation functions, constraining the ph
 ### Audio Rendering
 
 ```
-1. Generate 1024-sample wavetable via CPPN(position)
-2. Generate temporal envelope via CPPN(time)
+1. Generate 1024-sample wavetable via network(position_index)
+   - Iterate through normalized indices from -1 to 1
+   - Query network for each position to get amplitude
+2. Generate temporal envelope via network(time_index)  
+   - Iterate through normalized time indices from 0 to 1
+   - Query network for each time point to get envelope value
 3. Resample wavetable to 44.1kHz over 0.5 seconds
 4. Apply envelope to modulate amplitude
 5. Normalize and render through AudioContext
 ```
+
+Note: While the code iterates through indices sequentially, each network query is independent. This differs from recurrent networks that maintain state between time steps.
 
 ### Waveform Visualization
 
@@ -165,46 +171,25 @@ Each sound tile displays:
 - **Evolutionary algorithms**: Interactive demonstration of mutation, selection, and generational search
 - **Digital signal processing**: Activation functions as building blocks of complex audio synthesis
 
-## Technical Requirements
-
-- Modern web browser with Web Audio API support
-- JavaScript enabled
-- No external dependencies or build process required
-
-## Files
-
-- `index.html` - Interface layout and styling
-- `app.js` - Complete CPPN-NEAT implementation and audio synthesis
-- `assets/preview.png` - Screenshot for documentation
-
 ## Theoretical Background
 
 SynthBreeder synthesizes several research directions:
 
-**Compositional Pattern Producing Networks (CPPNs)**: Originally developed by Stanley (2007) for generating spatial patterns, CPPNs exploit functional composition of diverse activation functions to produce complex, regular patterns. By treating audio as a spatial pattern (time × frequency), CPPNs naturally generate structured waveforms.
-
 **NeuroEvolution of Augmenting Topologies (NEAT)**: Stanley & Miikkulainen's (2002) topology-evolving algorithm provides principled network complexification through competing conventions (innovation numbers) and historical tracking. This allows networks to start simple and gradually elaborate.
+
+**Compositional Activation Functions**: Inspired by Stanley's (2007) Compositional Pattern Producing Networks (CPPNs), this implementation uses diverse activation functions to enable complex pattern generation through functional composition. However, unlike true CPPNs which query networks with spatial coordinates (x, y) to generate resolution-independent outputs, this system uses networks as sequential function generators that map temporal indices to amplitude values.
 
 **Interactive Evolutionary Computation (IEC)**: Dawkins' Biomorphs (1986) and Sims' virtual creatures (1994) established the paradigm of human-guided evolution for aesthetic domains. SynthBreeder extends this to audio, where fitness evaluation is inherently subjective.
 
-**Procedural Audio Synthesis**: Rather than concatenative or sample-based approaches, CPPN synthesis is fully generative, producing sounds from mathematical first principles.
+**Procedural Audio Synthesis**: Rather than concatenative or sample-based approaches, the synthesis is fully generative, producing sounds from mathematical first principles through evolved function compositions.
 
-## Future Directions
-
-While the current implementation is feature-complete, potential extensions include:
-
-- Speciation through compatibility distance metrics
-- Crossover between selected parents
-- Multi-objective optimization (e.g., duration, spectral centroid)
-- Real-time parameter interpolation between selected sounds
-- Export to standard audio formats (WAV, FLAC)
-- Integration with DAWs via MIDI or OSC
+The key architectural difference from canonical CPPN applications is in the query pattern: CPPNs typically receive spatial coordinates as input and can generate outputs at arbitrary resolutions by querying different coordinate sets. This implementation instead iterates sequentially through normalized indices, making it closer to a NEAT-evolved function approximator with CPPN-inspired compositional activation functions.
 
 ## References
 
-Stanley, K. O. (2007). Compositional pattern producing networks: A novel abstraction of development. *Genetic Programming and Evolvable Machines*, 8(2), 131-162.
-
 Stanley, K. O., & Miikkulainen, R. (2002). Evolving neural networks through augmenting topologies. *Evolutionary Computation*, 10(2), 99-127.
+
+Stanley, K. O. (2007). Compositional pattern producing networks: A novel abstraction of development. *Genetic Programming and Evolvable Machines*, 8(2), 131-162.
 
 Secretan, J., et al. (2008). Picbreeder: Evolving pictures collaboratively online. *Proceedings of CHI*, 1759-1768.
 
@@ -212,6 +197,6 @@ Risi, S., Lehman, J., & Stanley, K. O. (2014). Evolving the placement and densit
 
 ## License
 
-This implementation is provided for research and educational purposes. The NEAT algorithm and CPPN methodology are based on published academic work by Kenneth O. Stanley and collaborators.
+This implementation is provided for research and educational purposes. The NEAT algorithm is based on published academic work by Kenneth O. Stanley and Risto Miikkulainen.
 
 This readme was largely AI generated. This is an on-going project. I'm a big believer in open science.

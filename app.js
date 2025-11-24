@@ -24,7 +24,7 @@ let neatConfig = {
     enabledActivations: new Set(['sine', 'square', 'sawtooth', 'triangle', 'gaussian', 'sigmoid', 'abs', 'linear', 'step', 'noise'])
 };
 
-// Activation functions for CPPNs (massive variety for complex sounds)
+// Activation functions for NNs (massive variety for complex sounds)
 const activationFunctions = {
     // Basic waves
     sine: (x) => Math.sin(x * Math.PI),
