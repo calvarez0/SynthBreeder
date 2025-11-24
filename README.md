@@ -2,7 +2,7 @@
 
 **Interactive Evolution of Percussion Sounds using NEAT with Compositional Activation Functions**
 
-![SynthBreeder Interface](assets/review.png)
+![SynthBreeder Interface](assets/preview.png)
 
 ## Overview
 
