@@ -2,7 +2,7 @@
 
 **Interactive Evolution of Percussion Sounds using CPPN-NEAT**
 
-![SynthBreeder Interface](preview.png)
+![SynthBreeder Interface](assets/preview.png)
 
 ## Overview
 
