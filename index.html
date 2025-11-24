@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeatBreeder - Evolve Percussion Sounds</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            display: grid;
+            grid-template-columns: 350px 1fr 420px;
+            gap: 20px;
+            height: 100vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .settings-panel {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .main-content {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .settings-panel h3 {
+            margin-top: 0;
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            color: #4CAF50;
+            font-size: 18px;
+        }
+
+        .setting-group {
+            margin-bottom: 25px;
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .setting-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .range-value {
+            display: inline-block;
+            float: right;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .activation-controls {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .select-btn {
+            flex: 1;
+            padding: 6px;
+            background: #333;
+            border: 1px solid #555;
+            color: #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .select-btn:hover {
+            background: #444;
+            border-color: #4CAF50;
+        }
+
+        .activation-checkboxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .activation-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .activation-checkboxes input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .preset-btn {
+            flex: 1;
+            padding: 8px;
+            background: #333;
+            border: 1px solid #555;
+            color: #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: #444;
+            border-color: #4CAF50;
+        }
+
+        .controls {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .controls h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin: 0 0 5px 0;
+            font-size: 28px;
+        }
+
+        .controls .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .evolve-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .evolve-btn:hover {
+            background: #45a049;
+        }
+
+        .reset-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #da190b;
+        }
+
+        .save-btn {
+            background: #2196F3;
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #0b7dda;
+        }
+
+        .info {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sound-item {
+            background: #2a2a2a;
+            border: 3px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .sound-item:hover {
+            border-color: #555;
+            transform: translateY(-2px);
+        }
+
+        .sound-item.selected {
+            border-color: #4CAF50;
+            background: #2a3a2a;
+        }
+
+        .sound-item.playing {
+            border-color: #2196F3;
+            background: #2a2a3a;
+        }
+
+        canvas {
+            width: 100%;
+            height: 80px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .sound-info {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+
+        .generation-info {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-item {
+            padding: 8px 16px;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            color: #4CAF50;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #network-viz {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            background: #1a1a1a;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .network-info {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .network-info div {
+            margin: 5px 0;
+        }
+
+        .node-legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+            padding: 10px;
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-panel">
+        <h3>⚙️ Evolution Settings</h3>
+
+        <div class="generation-info">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">Generation</div>
+                    <div class="stat-value" id="generation">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Selected</div>
+                    <div class="stat-value" id="selected-count">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Complexity</div>
+                    <div class="stat-value" id="avg-complexity">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <label>
+                Weight Mutation Rate
+                <span class="range-value" id="weight-mut-val">0.80</span>
+            </label>
+            <input type="range" id="weight-mutation" min="0" max="1" step="0.05" value="0.8"
+                   oninput="updateSetting('weight-mutation', this.value)">
+        </div>
+
+        <div class="setting-group">
+            <label>
+                Weight Mutation Power
+                <span class="range-value" id="weight-power-val">0.50</span>
+            </label>
+            <input type="range" id="weight-power" min="0" max="2" step="0.1" value="0.5"
+                   oninput="updateSetting('weight-power', this.value)">
+        </div>
+
+        <div class="setting-group">
+            <label>
+                Add Connection Rate
+                <span class="range-value" id="add-conn-val">0.15</span>
+            </label>
+            <input type="range" id="add-connection" min="0" max="1" step="0.05" value="0.15"
+                   oninput="updateSetting('add-connection', this.value)">
+        </div>
+
+        <div class="setting-group">
+            <label>
+                Add Node Rate
+                <span class="range-value" id="add-node-val">0.10</span>
+            </label>
+            <input type="range" id="add-node" min="0" max="1" step="0.02" value="0.1"
+                   oninput="updateSetting('add-node', this.value)">
+        </div>
+
+        <div class="setting-group">
+            <label>
+                Change Activation Rate
+                <span class="range-value" id="change-act-val">0.10</span>
+            </label>
+            <input type="range" id="change-activation" min="0" max="1" step="0.05" value="0.1"
+                   oninput="updateSetting('change-activation', this.value)">
+        </div>
+
+        <div class="setting-group">
+            <label>
+                Initial Mutation Count
+                <span class="range-value" id="init-mut-val">3</span>
+            </label>
+            <input type="range" id="init-mutations" min="0" max="10" step="1" value="3"
+                   oninput="updateSetting('init-mutations', this.value)">
+        </div>
+
+        <div class="setting-group">
+            <label>Available Activation Functions</label>
+            <div class="activation-controls">
+                <button class="select-btn" onclick="selectAllActivations()">Select All</button>
+                <button class="select-btn" onclick="deselectAllActivations()">Deselect All</button>
+            </div>
+            <div class="activation-checkboxes" id="activation-functions"></div>
+        </div>
+
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="loadPreset('default')">Default</button>
+            <button class="preset-btn" onclick="loadPreset('diverse')">Diverse</button>
+            <button class="preset-btn" onclick="loadPreset('stable')">Stable</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="controls">
+            <h1>🥁 BeatBreeder</h1>
+            <div class="subtitle">Evolve Percussion Sounds with CPPN-NEAT</div>
+            <div class="button-group">
+                <button class="evolve-btn" onclick="evolve()">Evolve Selected</button>
+                <button class="reset-btn" onclick="reset()">New Population</button>
+                <button class="save-btn" onclick="saveSelected()">Save Selected</button>
+            </div>
+            <div class="info">
+                Click on any sound to play it and select it for evolution.
+            </div>
+        </div>
+
+        <div class="sound-grid" id="sound-grid"></div>
+    </div>
+
+    <div class="sidebar">
+        <h2>🧠 Network Topology</h2>
+        <canvas id="network-viz"></canvas>
+
+        <div class="node-legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2196F3;"></div>
+                <span>Input</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4CAF50;"></div>
+                <span>Output</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF9800;"></div>
+                <span>Hidden</span>
+            </div>
+        </div>
+
+        <div class="network-info" id="network-info">
+            <div><strong>Click a sound to view its network</strong></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
