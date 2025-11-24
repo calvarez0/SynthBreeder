@@ -213,3 +213,5 @@ Risi, S., Lehman, J., & Stanley, K. O. (2014). Evolving the placement and densit
 ## License
 
 This implementation is provided for research and educational purposes. The NEAT algorithm and CPPN methodology are based on published academic work by Kenneth O. Stanley and collaborators.
+
+This readme was largely AI generated. This is an on-going project. I'm a big believer in open science.
